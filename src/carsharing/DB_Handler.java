@@ -24,7 +24,14 @@ public class DB_Handler {
             String sql = "CREATE TABLE IF NOT EXISTS COMPANY (" +
                     "ID INT PRIMARY KEY AUTO_INCREMENT," +
                     "NAME VARCHAR NOT NULL UNIQUE" +
-                    ")";
+                    ");" +
+                    "CREATE TABLE IF NOT EXISTS CAR (" +
+                    "ID INT PRIMARY KEY AUTO_INCREMENT," +
+                    "NAME VARCHAR NOT NULL UNIQUE," +
+                    "COMPANY_ID INT NOT NULL," +
+                    "CONSTRAINT fk_companyId FOREIGN KEY (COMPANY_ID)" +
+                    "REFERENCES COMPANY(ID)" +
+                    ");";
             stmt.executeUpdate(sql);
             System.out.println("Created table in given database...");
 
@@ -94,6 +101,60 @@ public class DB_Handler {
                     String sql = "INSERT INTO COMPANY(NAME) VALUES('" + companyName + "');";
                     statement.executeUpdate(sql);
                     System.out.println("The company was created!");
+                    System.out.println();
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static ArrayList<Car> getCarList(int companyId) {
+        ArrayList<Car> carList = new ArrayList<>();
+
+        try {
+            Class.forName(JDBC_DRIVER);
+            try (Connection connection = DriverManager.getConnection(DB_URL)) {
+
+                connection.setAutoCommit(true);
+                try (Statement statement = connection.createStatement()) {
+                    String countQuery = "SELECT COUNT(*) FROM CAR";
+                    var res = statement.executeQuery(countQuery);
+                    int count = -1;
+
+                    while (res.next()) {
+                        count = res.getInt(1);
+                    }
+
+                    if (count > 0) {
+                        String listQuery = "SELECT * " +
+                                "FROM CAR " +
+                                "WHERE COMPANY_ID = " + companyId + ";";
+                        res = statement.executeQuery(listQuery);
+
+                        while (res.next()) {
+                            carList.add(new Car(res.getInt(1), res.getString(2), companyId));
+                        }
+                    }
+                }
+
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return carList;
+    }
+
+    static void createCar(String carName, int companyId) {
+        try {
+            Class.forName(JDBC_DRIVER);
+            try (Connection connection = DriverManager.getConnection(DB_URL)) {
+                connection.setAutoCommit(true);
+
+                try (Statement statement = connection.createStatement()) {
+                    String sql = "INSERT INTO CAR(NAME, COMPANY_ID) VALUES('" + carName + "', " + companyId + ");";
+                    statement.executeUpdate(sql);
+                    System.out.println("The car was added!");
                     System.out.println();
                 }
             }

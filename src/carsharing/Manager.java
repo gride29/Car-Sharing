@@ -13,7 +13,7 @@ public class Manager {
     }
 
     static void printCompanies(ArrayList<Company> companies) {
-        System.out.println("Company list:");
+        System.out.println("Choose the company:");
 
         int id = 1;
 
@@ -21,7 +21,7 @@ public class Manager {
             System.out.println(id + ". " + company.companyName);
             id++;
         }
-        System.out.println();
+        System.out.println("0. Back");
     }
 
     void startManaging() {
@@ -41,6 +41,17 @@ public class Manager {
                         System.out.println();
                     } else {
                         printCompanies(companies);
+
+                        int selectedCompany = Integer.parseInt(scan.nextLine());
+                        System.out.println();
+
+                        if (selectedCompany == 0) {
+                            break;
+                        }
+
+                        Company currentCompany = new Company(companies.get(selectedCompany-1));
+                        System.out.println("'" + currentCompany.companyName + "'" + " company");
+                        currentCompany.controlCompany();
                     }
                     break;
                 case 2:
