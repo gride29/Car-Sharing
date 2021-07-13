@@ -6,6 +6,8 @@ public class Main {
 
     static void printMenu() {
         System.out.println("1. Log in as a manager\n" +
+                "2. Log in as a customer\n" +
+                "3. Create a customer\n" +
                 "0. Exit"
         );
     }
@@ -22,6 +24,14 @@ public class Main {
             switch (option) {
                 case 1:
                     new Manager().startManaging();
+                    break;
+                case 2:
+                    new Customer().startServing();
+                    break;
+                case 3:
+                    System.out.println("Enter the customer name:");
+                    String customerName = scan.nextLine();
+                    DB_Handler.createCustomer(customerName);
                     break;
                 case 0:
                     return;
